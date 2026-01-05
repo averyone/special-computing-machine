@@ -1,0 +1,9 @@
+scam_detector.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.eggs/
+
