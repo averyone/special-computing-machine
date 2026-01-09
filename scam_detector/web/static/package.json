@@ -1,0 +1,21 @@
+{
+  "name": "scam-detector-frontend",
+  "version": "0.1.0",
+  "description": "Frontend for scam detection system",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": ["**/*.test.js"],
+    "setupFilesAfterEnv": ["./jest.setup.js"],
+    "moduleFileExtensions": ["js"],
+    "verbose": true
+  }
+}
