@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scam Detection System</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Scam Detection System</h1>
+            <p class="subtitle">AI-powered scam pattern detection</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="analyze">Analyze Message</button>
+            <button class="tab-btn" data-tab="patterns">Manage Patterns</button>
+            <button class="tab-btn" data-tab="config">Configuration</button>
+        </nav>
+
+        <!-- Analyze Tab -->
+        <section id="analyze" class="tab-content active">
+            <div class="card">
+                <h2>Test a Message for Scams</h2>
+                <form id="analyze-form">
+                    <div class="form-group">
+                        <label for="message-title">Title (optional)</label>
+                        <input type="text" id="message-title" placeholder="Message or post title...">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-author">Author (optional)</label>
+                        <input type="text" id="message-author" placeholder="Author username...">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-content">Message Content *</label>
+                        <textarea id="message-content" rows="8" placeholder="Paste the message you want to analyze..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="analyze-btn">
+                        <span class="btn-text">Analyze Message</span>
+                        <span class="btn-loading" style="display: none;">Analyzing...</span>
+                    </button>
+                </form>
+            </div>
+
+            <div id="results-container" class="card" style="display: none;">
+                <h2>Analysis Results</h2>
+                <div id="results-content"></div>
+            </div>
+        </section>
+
+        <!-- Patterns Tab -->
+        <section id="patterns" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Scam Patterns</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" id="add-pattern-btn">Add Pattern</button>
+                        <button class="btn btn-secondary" id="export-patterns-btn">Export</button>
+                        <button class="btn btn-secondary" id="import-patterns-btn">Import</button>
+                        <button class="btn btn-danger" id="reset-patterns-btn">Reset to Defaults</button>
+                    </div>
+                </div>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+                <div id="patterns-list"></div>
+            </div>
+
+            <!-- Add/Edit Pattern Modal -->
+            <div id="pattern-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="modal-title">Add New Pattern</h3>
+                        <button class="close-btn" id="close-modal">&times;</button>
+                    </div>
+                    <form id="pattern-form">
+                        <input type="hidden" id="pattern-edit-mode" value="create">
+                        <input type="hidden" id="pattern-original-name">
+                        <div class="form-group">
+                            <label for="pattern-name">Pattern Name *</label>
+                            <input type="text" id="pattern-name" required placeholder="e.g., lottery_scam">
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-description">Description *</label>
+                            <textarea id="pattern-description" rows="3" required placeholder="Describe the scam pattern in plain English..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-severity">Severity</label>
+                            <select id="pattern-severity">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-indicators">Indicators (one per line)</label>
+                            <textarea id="pattern-indicators" rows="4" placeholder="Red flags to look for...&#10;One indicator per line..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="pattern-examples">Examples (one per line)</label>
+                            <textarea id="pattern-examples" rows="4" placeholder="Example phrases that match this pattern...&#10;One example per line..."></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="cancel-pattern">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Pattern</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Config Tab -->
+        <section id="config" class="tab-content">
+            <div class="card">
+                <h2>LLM Configuration</h2>
+                <p class="help-text">Configure the connection to your LLM provider (OpenAI-compatible API).</p>
+                <form id="config-form">
+                    <div class="form-group">
+                        <label for="config-base-url">API Base URL</label>
+                        <input type="url" id="config-base-url" placeholder="http://localhost:1234/v1">
+                        <small>Examples: http://localhost:1234/v1 (LM Studio), http://localhost:11434/v1 (Ollama)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="config-api-key">API Key (optional)</label>
+                        <input type="password" id="config-api-key" placeholder="sk-...">
+                        <small>Required for OpenAI API, optional for local LLMs</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="config-model">Model Name</label>
+                        <input type="text" id="config-model" placeholder="local-model">
+                        <small>Model identifier (e.g., gpt-4, llama-2, local-model)</small>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="config-temperature">Temperature</label>
+                            <input type="number" id="config-temperature" step="0.1" min="0" max="2" placeholder="0.1">
+                            <small>Lower = more focused, Higher = more creative</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="config-max-tokens">Max Tokens</label>
+                            <input type="number" id="config-max-tokens" min="256" max="8192" placeholder="2048">
+                            <small>Maximum response length</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Configuration</button>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <p>Scam Detection System v0.1.0</p>
+        </footer>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

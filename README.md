@@ -191,6 +191,49 @@ async def analyze_posts(posts):
 asyncio.run(analyze_posts(my_posts))
 ```
 
+## Web Interface
+
+The library includes a web-based interface for testing and configuring the scam detector.
+
+### Running the Web Interface
+
+```bash
+# Install web dependencies
+pip install fastapi uvicorn python-multipart
+
+# Run the web server
+python -m scam_detector.web
+
+# Or with uvicorn directly
+uvicorn scam_detector.web.app:app --reload
+```
+
+Then open http://localhost:8000 in your browser.
+
+### Web Interface Features
+
+- **Analyze Messages**: Paste messages to test for scam patterns with detailed results
+- **Manage Patterns**: Add, edit, and delete scam patterns through the UI
+- **Import/Export**: Download patterns as JSON files or upload pattern files
+- **Configure LLM**: Set the LLM provider URL, API key, model, and parameters
+
+### API Endpoints
+
+The web interface also exposes a REST API:
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/analyze` | POST | Analyze a message for scams |
+| `/api/patterns` | GET | List all patterns |
+| `/api/patterns` | POST | Create a new pattern |
+| `/api/patterns/{name}` | PUT | Update a pattern |
+| `/api/patterns/{name}` | DELETE | Delete a pattern |
+| `/api/patterns/export` | GET | Download patterns as JSON |
+| `/api/patterns/import` | POST | Upload patterns from JSON |
+| `/api/patterns/reset` | POST | Reset to default patterns |
+| `/api/config` | GET | Get LLM configuration |
+| `/api/config` | PUT | Update LLM configuration |
+
 ## Project Structure
 
 ```
@@ -199,7 +242,15 @@ scam_detector/
 ├── models.py        # Data models (Post, Pattern, Result)
 ├── client.py        # OpenAI-compatible API client
 ├── detector.py      # Detection engine
-└── patterns.py      # Pre-defined scam patterns
+├── patterns.py      # Pre-defined scam patterns
+└── web/             # Web interface
+    ├── __init__.py
+    ├── __main__.py  # Entry point for running web server
+    ├── app.py       # FastAPI application
+    └── static/      # Frontend assets
+        ├── index.html
+        ├── styles.css
+        └── app.js
 
 examples/
 ├── basic_usage.py   # Synchronous usage examples
